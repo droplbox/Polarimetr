@@ -1,0 +1,26 @@
+--cpu Cortex-M3
+"polarimetr1\startup_stm32f103xb.o"
+"polarimetr1\ads1220.o"
+"polarimetr1\main.o"
+"polarimetr1\stm32f1xx_it.o"
+"polarimetr1\stm32f1xx_hal_msp.o"
+"polarimetr1\stm32f1xx_hal_gpio_ex.o"
+"polarimetr1\stm32f1xx_hal_i2c.o"
+"polarimetr1\stm32f1xx_hal.o"
+"polarimetr1\stm32f1xx_hal_rcc.o"
+"polarimetr1\stm32f1xx_hal_rcc_ex.o"
+"polarimetr1\stm32f1xx_hal_gpio.o"
+"polarimetr1\stm32f1xx_hal_dma.o"
+"polarimetr1\stm32f1xx_hal_cortex.o"
+"polarimetr1\stm32f1xx_hal_pwr.o"
+"polarimetr1\stm32f1xx_hal_flash.o"
+"polarimetr1\stm32f1xx_hal_flash_ex.o"
+"polarimetr1\stm32f1xx_hal_exti.o"
+"polarimetr1\stm32f1xx_hal_spi.o"
+"polarimetr1\stm32f1xx_hal_tim.o"
+"polarimetr1\stm32f1xx_hal_tim_ex.o"
+"polarimetr1\system_stm32f1xx.o"
+--library_type=microlib --strict --scatter "polarimetr1\polarimetr1.sct"
+--summary_stderr --info summarysizes --map --load_addr_map_info --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "polarimetr1.map" -o polarimetr1\polarimetr1.axf
