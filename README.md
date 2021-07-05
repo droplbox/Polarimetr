@@ -2,6 +2,7 @@
  A simple polarimetr for PFIA
 Main board: Blue Pill (Stm32f103C8T6)
 Sensor: Phototransistor TEMT6000 module
+OpAmp: AD8237ARMZ
 ADC: 24-bit 2ksps ADS1220 (TI) 
 Display: 1602 via I2C convertor
 Exciter: 405nm Diode 
