@@ -60,8 +60,9 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define CS_Pin GPIO_PIN_4
 #define CS_GPIO_Port GPIOA
-#define _DRDY_Pin GPIO_PIN_0
-#define _DRDY_GPIO_Port GPIOB
+#define _DRDY_IT_Pin GPIO_PIN_0
+#define _DRDY_IT_GPIO_Port GPIOB
+#define _DRDY_IT_EXTI_IRQn EXTI0_IRQn
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */

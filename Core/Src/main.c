@@ -54,7 +54,9 @@ SPI_HandleTypeDef hspi1;
 
 /* USER CODE BEGIN PV */
 uint8_t rdy =0;
+uint8_t ch =0;
 uint32_t res;
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -124,7 +126,14 @@ void LCD_Init(void){
   I2C_send(0b00000001,0);   // ??????? ???????
 }
 
-
+void LCD_Sendwindow(uint32_t a, uint32_t b){
+	LCD_Init();
+	LCD_SendString(itoa(a,16));
+	I2C_send(0b11000000,0);
+	LCD_SendString(itoa(b,16));
+	LCD_SendString(" val: ");
+	LCD_SendString(itoa((a-b)/(a+b),16));
+}
 /* USER CODE END 0 */
 
 /**
@@ -167,32 +176,37 @@ int main(void)
 	uint32_t a;
 	
 	uint32_t b;
-//	ads1220_init();
+	ads1220_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {	
-		
-
-			LCD_Init();
-			ads1220_init0();
+  {		
+		ads1220_chanset(0);
+		for (int i=0; i<11; i++){
+		 	while(rdy==0){};
+			a += ads1220_getres();
+			rdy = 0;	
 			ads1220_sync();
-			while ((HAL_GPIO_ReadPin(_DRDY_GPIO_Port, _DRDY_Pin))){}
-			LCD_SendString(itoa(a=ads1220_getres(),16));
-			I2C_send(0b11000000,0); 
-			ads1220_init2();
+		}
+	
+		ads1220_chanset(2);
+		for (int i=0; i<11; i++){
+		 	while(rdy==0){};
+			b += ads1220_getres();
+			rdy = 0;	
 			ads1220_sync();
-			while ((HAL_GPIO_ReadPin(_DRDY_GPIO_Port, _DRDY_Pin))){}
-			LCD_SendString(itoa(b=ads1220_getres(),16));
-				LCD_SendString(" val: ");
-			LCD_SendString(itoa((a-b)/(a+b),16));
-    
+		}
+			
+			
+			LCD_Sendwindow(a/10,b/10);	
+		 
+			
+    //HAL_Delay(100);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_Delay(1000);
   }
   /* USER CODE END 3 */
 }
@@ -292,7 +306,7 @@ static void MX_SPI1_Init(void)
   hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
   hspi1.Init.CLKPhase = SPI_PHASE_2EDGE;
   hspi1.Init.NSS = SPI_NSS_SOFT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_256;
+  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
   hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
   hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
   hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -331,19 +345,25 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(CS_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : _DRDY_Pin */
-  GPIO_InitStruct.Pin = _DRDY_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  /*Configure GPIO pin : _DRDY_IT_Pin */
+  GPIO_InitStruct.Pin = _DRDY_IT_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_FALLING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
-  HAL_GPIO_Init(_DRDY_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_Init(_DRDY_IT_GPIO_Port, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI0_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 
 }
 
 /* USER CODE BEGIN 4 */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-
+	if (GPIO_Pin==_DRDY_IT_Pin){
 	rdy = 1;
-
+	} else {
+		__ASM("nop");;
+	}
  
 }
 /* USER CODE END 4 */
